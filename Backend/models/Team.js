@@ -89,8 +89,19 @@ const TeamSchema = new mongoose.Schema({
     },
     team_member4_year: {
         type: String
+    },
+
+    image_url:{
+        type:String,
+        required:true,
+    },
+
+    tranjectionId:{
+        type:String,
+        required:true,
     }
 });
+
 
 module.exports = mongoose.model('Team', TeamSchema);
 
