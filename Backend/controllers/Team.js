@@ -1,7 +1,28 @@
 const Team = require('../models/Team');
+const cloudinary=require('cloudinary').v2;
+const mongoose=require('mongoose');
+const mailSender = require('../utils/mailsender');
+
+
+function isfiletypesupported(type, supportedTypes) {
+    return supportedTypes.includes(type);
+}
+
+
+async function uploadfilecloudinary(file, folder, quality) {
+    const options = { folder };
+    if (quality) {
+        options.quality = quality;
+    }
+    options.resource_type = "auto";
+    return await cloudinary.uploader.upload(file.tempFilePath, options);
+}
 
 exports.TeamDetails = async (req, res) => {
     try {
+        console.log("Form data:", req.body);
+        console.log("File uploaded:", req.files);
+
         const {
             teamname,
             Instituename,
@@ -29,19 +50,33 @@ exports.TeamDetails = async (req, res) => {
             team_member4_email,
             team_member4_mob,
             team_member4_branch,
-            team_member4_year
+            team_member4_year,
+            tranjectionId,
         } = req.body;
 
-        if (!teamname || !Instituename || !teamLeader || !teamLeader_email || !teamLeader_mobile || !teamLeader_branch || !teamLeader_year) {
-                return res.status(400).json({
-                    success:false,
-                    message: "All team leader fields are required" 
-                });
+        const uploadedImage = req.files.imagefile;
+        console.log(uploadedImage);
+
+        if (!teamname || !Instituename || !teamLeader || !teamLeader_email || !teamLeader_mobile || !teamLeader_branch || !teamLeader_year || !tranjectionId) {
+            return res.status(400).json({
+                success:false,
+                message: "All team leader fields are required" 
+            });
         }
 
-     
+        const supportedFiles = ["jpeg", "jpg", "png"];
+        const filetype = uploadedImage.name.split('.').pop().toLowerCase();
+        if (!isfiletypesupported(filetype, supportedFiles)) {
+            return res.status(400).json({
+                success: false,
+                message: "File format not supported",
+            });
+        }
 
-        const team=await Team.create({
+        const response = await uploadfilecloudinary(uploadedImage, "uploadnew");
+        console.log(response);
+
+        const team = await Team.create({
             teamname,
             Instituename,
             teamLeader,
@@ -68,12 +103,29 @@ exports.TeamDetails = async (req, res) => {
             team_member4_email,
             team_member4_mob,
             team_member4_branch,
-            team_member4_year
-        })
+            team_member4_year,
+            image_url: response.secure_url,
+            tranjectionId
+        });
+
+
+        const allEmails = [
+            teamLeader_email,
+            team_member1_email,
+            team_member2_email,
+            team_member3_email,
+            team_member4_email
+        ].filter(email => email); 
+
+        await mailSender(
+            allEmails.join(","),
+            "🎉 Team Registration Successful",
+            registrationEmailTemplate(teamname, Instituename)
+        );
 
         res.status(201).json({
             success:true,
-            message: "Team registered successfully",
+            message: "Team registered successfully and emails sent",
             data: team
         });
 
@@ -107,5 +159,27 @@ exports.getTeams = async (req, res) => {
         });
     }
 };
+
+function registrationEmailTemplate(teamname, Instituename) {
+    return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #f9f9f9; padding: 20px; border-radius: 10px;">
+        <h2 style="color: #4CAF50; text-align: center;">🎉 Registration Successful!</h2>
+        <p style="font-size: 16px; color: #333;">
+            Hello,
+        </p>
+        <p style="font-size: 16px; color: #333;">
+            Your team <b>${teamname}</b> from <b>${Instituename}</b> has been successfully registered for the event.
+        </p>
+        <p style="font-size: 16px; color: #333;">
+            Get ready to showcase your talent! We will share more details soon.
+        </p>
+        <hr style="border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 14px; color: #777; text-align: center;">
+            Regards,<br>
+            Rajneesh Event Team
+        </p>
+    </div>
+    `;
+}
 
 
