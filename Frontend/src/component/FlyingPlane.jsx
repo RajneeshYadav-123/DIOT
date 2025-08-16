@@ -11,16 +11,14 @@ const FlyingPlane = ({ targetRef }) => {
     const startY = 200;
 
     const targetRect = targetRef.current.getBoundingClientRect();
-    const endX = targetRect.left + targetRect.width / 2 - 24; // plane width offset
-    const endY = targetRect.top + targetRect.height / 2 - 12; // plane height offset
-
+    const endX = targetRect.left + targetRect.width / 2 - 24; 
+    const endY = targetRect.top + targetRect.height / 2 - 12;
     let startTime = null;
 
     const animate = (timestamp) => {
       if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / 3000, 1); // 3 seconds to land
+      const progress = Math.min((timestamp - startTime) / 3000, 1); 
 
-      // Linear interpolation
       const x = startX + (endX - startX) * progress;
       const y = startY + (endY - startY) * progress;
 

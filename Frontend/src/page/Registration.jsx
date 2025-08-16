@@ -1,41 +1,93 @@
-// src/page/Registration.jsx
 import React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
+import axios from "axios";
 
 const RegistrationPage = () => {
-  const { register, control, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       teamName: "",
       instituteName: "",
-      members: [{ name: "", rollNo: "", branch: "", year: "", mobile: "", email: "" }],
+      members: [
+        { name: "", rollNo: "", branch: "", year: "", mobile: "", email: "" },
+      ],
       transactionNo: "",
-      receiptFile: null
-    }
+      receiptFile: null,
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "members"
+    name: "members",
   });
 
-  const onSubmit = (data) => {
-   const processedData = {
-    ...data,
-    receiptFile: data.receiptFile?.[0]?.name || null  // show file name instead of File object
-  };
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("teamname", data.teamName);
+      formData.append("Instituename", data.instituteName);
+      formData.append("tranjectionId", data.transactionNo);
 
-  console.log("Submitted Form Data:", processedData);
-  alert("Form submitted! Check console.");
+      if (data.members[0]) {
+        formData.append("teamLeader", data.members[0].name);
+        formData.append("teamLeader_email", data.members[0].email);
+        formData.append("teamLeader_mobile", data.members[0].mobile);
+        formData.append("teamLeader_branch", data.members[0].branch);
+        formData.append("teamLeader_year", data.members[0].year);
+      }
+
+      data.members.slice(1).forEach((m, i) => {
+        formData.append(`team_member${i + 1}_name`, m.name);
+        formData.append(`team_member${i + 1}_email`, m.email);
+        formData.append(`team_member${i + 1}_mob`, m.mobile);
+        formData.append(`team_member${i + 1}_branch`, m.branch);
+        formData.append(`team_member${i + 1}_year`, m.year);
+      });
+
+      if (data.receiptFile?.[0]) {
+        formData.append("imagefile", data.receiptFile[0]);
+      }
+
+      const res = await axios.post(
+        "http://localhost:4000/api/v1/team/teams",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      alert("✅ Team Registered Successfully!");
+      console.log("Server Response:", res.data);
+      reset();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Error registering team. Check console.");
+    }
   };
 
   const years = ["1st", "2nd", "3rd", "4th"];
-  const branches = ["CSE", "IT", "ECE", "ECE(IoT)", "EE", "ME", "CE", "CHE", "B.PHARMA", "BBA"];
+  const branches = [
+    "CSE",
+    "IT",
+    "ECE",
+    "ECE(IoT)",
+    "EE",
+    "ME",
+    "CE",
+    "CHE",
+    "B.PHARMA",
+    "BBA",
+  ];
 
-  // Hardcoded bank details
   const bankDetails = {
     accountNo: "99999555951834",
     accountName: "AMAN JAISWAL",
-    ifsc: "SBIN0002578"
+    ifsc: "SBIN0002578",
   };
 
   return (
@@ -56,100 +108,74 @@ const RegistrationPage = () => {
           Team Registration
         </h1>
 
-        {/* Team & Institute */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             {...register("teamName", { required: "Team Name is required" })}
             placeholder="Team Name"
-            className={`px-4 py-3 rounded-lg bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 ${
-              errors.teamName ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-            }`}
+            className="px-4 py-3 rounded-lg bg-black/40 text-white placeholder-gray-300 focus:outline-none"
           />
           <input
-            {...register("instituteName", { required: "Institute Name is required" })}
+            {...register("instituteName", {
+              required: "Institute Name is required",
+            })}
             placeholder="Institute Name"
-            className={`px-4 py-3 rounded-lg bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 ${
-              errors.instituteName ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-            }`}
+            className="px-4 py-3 rounded-lg bg-black/40 text-white placeholder-gray-300 focus:outline-none"
           />
         </div>
 
-        {/* Players */}
         {fields.map((field, index) => (
-          <div key={field.id} className="bg-black/30 p-4 rounded-xl flex flex-col gap-3">
-            <h2 className="text-yellow-400 font-semibold text-lg">Member {index + 1}</h2>
+          <div
+            key={field.id}
+            className="bg-black/30 p-4 rounded-xl flex flex-col gap-3"
+          >
+            <h2 className="text-yellow-400 font-semibold text-lg">
+              Member {index + 1} {index === 0 && "(Team Leader)"}
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
-                {...register(`members.${index}.name`, {
-                  required: "Name is required",
-                  pattern: { value: /^[A-Za-z ]+$/, message: "Only alphabets allowed" }
-                })}
+                {...register(`members.${index}.name`, { required: true })}
                 placeholder="Name"
-                className={`px-4 py-2 rounded-lg bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 ${
-                  errors.members?.[index]?.name ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-                }`}
+                className="px-4 py-2 rounded-lg bg-black/40 text-white"
               />
-
               <input
-                {...register(`members.${index}.rollNo`, {
-                  pattern: { value: /^[A-Za-z0-9]+$/, message: "Only alphanumeric allowed" }
-                })}
+                {...register(`members.${index}.rollNo`)}
                 placeholder="Roll No"
-                className={`px-4 py-2 rounded-lg bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 ${
-                  errors.members?.[index]?.rollNo ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-                }`}
+                className="px-4 py-2 rounded-lg bg-black/40 text-white"
               />
-
               <select
-                {...register(`members.${index}.branch`, { required: "Branch is required" })}
-                className={`px-4 py-2 rounded-lg bg-black/40 text-white focus:outline-none focus:ring-2 ${
-                  errors.members?.[index]?.branch ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-                }`}
+                {...register(`members.${index}.branch`, { required: true })}
+                className="px-4 py-2 rounded-lg bg-black/40 text-white"
               >
-                <option value="" disabled>Select Branch</option>
-                {branches.map((branch, idx) => (
-                  <option key={idx} value={branch} className="bg-black/70 text-white hover:bg-yellow-500 hover:text-black">
-                    {branch}
+                <option value="">Select Branch</option>
+                {branches.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
                   </option>
                 ))}
               </select>
-
               <select
-                {...register(`members.${index}.year`, { required: "Year is required" })}
-                className={`px-4 py-2 rounded-lg bg-black/40 text-white focus:outline-none focus:ring-2 ${
-                  errors.members?.[index]?.year ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-                }`}
+                {...register(`members.${index}.year`, { required: true })}
+                className="px-4 py-2 rounded-lg bg-black/40 text-white"
               >
-                <option value="" disabled>Select Year</option>
-                {years.map((year, idx) => (
-                  <option key={idx} value={year} className="bg-black/70 text-white hover:bg-yellow-500 hover:text-black">{year}</option>
+                <option value="">Select Year</option>
+                {years.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
                 ))}
               </select>
-
               <input
-                {...register(`members.${index}.mobile`, {
-                  required: "Mobile number is required",
-                  pattern: { value: /^[0-9]{10}$/, message: "Enter a valid 10-digit number" }
-                })}
+                {...register(`members.${index}.mobile`, { required: true })}
                 placeholder="Mobile No"
-                className={`px-4 py-2 rounded-lg bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 ${
-                  errors.members?.[index]?.mobile ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-                }`}
+                className="px-4 py-2 rounded-lg bg-black/40 text-white"
               />
-
               <input
-                {...register(`members.${index}.email`, {
-                  required: "Email is required",
-                  pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Enter a valid email" }
-                })}
-                placeholder="Email ID"
-                className={`px-4 py-2 rounded-lg bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 ${
-                  errors.members?.[index]?.email ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-                }`}
+                {...register(`members.${index}.email`, { required: true })}
+                placeholder="Email"
+                className="px-4 py-2 rounded-lg bg-black/40 text-white"
               />
             </div>
-
-            {fields.length > 1 && (
+            {index > 0 && (
               <button
                 type="button"
                 onClick={() => remove(index)}
@@ -164,45 +190,60 @@ const RegistrationPage = () => {
         {fields.length < 5 && (
           <button
             type="button"
-            onClick={() => append({ name: "", rollNo: "", branch: "", year: "", mobile: "", email: "" })}
+            onClick={() =>
+              append({
+                name: "",
+                rollNo: "",
+                branch: "",
+                year: "",
+                mobile: "",
+                email: "",
+              })
+            }
             className="self-start px-6 py-3 bg-yellow-500 hover:bg-yellow-400 rounded-lg font-semibold transition-colors"
           >
             Add Player
           </button>
         )}
 
-        {/* Bank Details Display */}
         <div className="bg-black/30 p-4 rounded-xl flex flex-col gap-3 mt-6">
-          <h2 className="text-yellow-400 font-semibold text-lg">Bank Details (For Payment)</h2>
+          <h2 className="text-yellow-400 font-semibold text-lg">
+            Bank Details (For Payment)
+          </h2>
           <p className="text-white">Account Number: {bankDetails.accountNo}</p>
           <p className="text-white">Account Name: {bankDetails.accountName}</p>
           <p className="text-white">IFSC Code: {bankDetails.ifsc}</p>
-<div className="flex flex-col mt-5 gap-5">
-     <input
-            {...register("transactionNo", { required: "Transaction number required" })}
+
+          <input
+            {...register("transactionNo", { required: true })}
             placeholder="Transaction Id"
-            className={`px-4 py-2 rounded-lg bg-black/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 ${
-              errors.transactionNo ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-            }`}
+            className="px-4 py-2 rounded-lg bg-black/20 text-white mt-4"
           />
-<h2 className="text-white mt-5">Uplaod ScreenShot of payment</h2>
+
+          <h2 className="text-white mt-4">Upload Screenshot of Payment</h2>
           <input
             type="file"
-            {...register("receiptFile", { required: "Receipt file required" })}
-            className={`px-4 py-2 rounded-lg bg-black/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 ${
-              errors.receiptFile ? "focus:ring-red-500 border-2 border-red-500" : "focus:ring-yellow-400"
-            }`}
+            {...register("receiptFile", { required: true })}
+            className="px-4 py-2 rounded-lg bg-black/20 text-white"
           />
-</div>
-     
         </div>
 
-        <button
-          type="submit"
-          className="self-end px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-semibold rounded-lg shadow-lg hover:from-orange-600 hover:to-yellow-500 transition-transform hover:scale-105 mt-4"
-        >
-          Submit
-        </button>
+        <div className="flex justify-between items-center mt-6">
+          <button
+            type="button"
+            onClick={() => (window.location.href = "/")}
+            className="px-6 py-3 bg-black/40 text-yellow-400 border border-yellow-400 rounded-lg font-semibold hover:bg-yellow-400 hover:text-black transition-colors"
+          >
+            ⬅ Back to Home
+          </button>
+
+          <button
+            type="submit"
+            className="px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-semibold rounded-lg shadow-lg hover:from-orange-600 hover:to-yellow-500 transition-transform hover:scale-105"
+          >
+            Submit
+          </button>
+        </div>
       </form>
     </div>
   );

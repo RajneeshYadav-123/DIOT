@@ -160,6 +160,8 @@ exports.getTeams = async (req, res) => {
     }
 };
 
+
+
 function registrationEmailTemplate(teamname, Instituename) {
     return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">

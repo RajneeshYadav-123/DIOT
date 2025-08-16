@@ -8,16 +8,13 @@ const LandingPage = () => {
    const buttonRef = useRef(null);
   return (
     <div className="relative w-screen min-h-screen overflow-hidden text-white flex flex-col">
-      {/* Background Image */}
       <div className="absolute inset-0 -z-10">
-        {/* Large screen background */}
         <img
           src="/bg1.png"
           alt="Background"
           className="hidden md:block w-full object-cover object-center"
           draggable="false"
         />
-        {/* Small screen background */}
         <img
           src="/bg5.png"
           alt="Mobile Background"
@@ -27,7 +24,6 @@ const LandingPage = () => {
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Main Content */}
       <div className="flex-grow flex flex-col justify-center px-4 sm:px-8 md:px-24 text-center md:text-left">
         <TypeAnimation
           sequence={["SwiftWings'25", 2000, "", 800]}
@@ -47,7 +43,6 @@ const LandingPage = () => {
           Push the limits of innovation and claim your place among the legends.
         </p>
 
-        {/* Parallelogram Register Button */}
         <div className="mt-6 sm:mt-8 flex justify-center md:justify-start">
           <button
               ref={buttonRef}
@@ -61,12 +56,9 @@ const LandingPage = () => {
       </div>
 
 
-  {/* <FlyingPlane targetRef={buttonRef} /> */}
 
 
-      {/* Footer */}
       <footer className="w-full bg-black/50 backdrop-blur-md py-6 mt-auto flex flex-col md:flex-row items-center justify-between px-4 sm:px-8 md:px-24 text-gray-200">
-        {/* Contact / Socials */}
         <div className="flex items-center gap-6 mb-4 md:mb-0 justify-center md:justify-start">
           <a href="mailto:example@email.com" target="_blank" rel="noopener noreferrer">
             <FaEnvelope size={20} className="hover:text-yellow-400 transition-colors" />
@@ -79,7 +71,6 @@ const LandingPage = () => {
           </a>
         </div>
 
-        {/* Copyright */}
         <p className="text-xs sm:text-sm md:text-sm text-gray-300 text-center md:text-left">
           &copy; {new Date().getFullYear()} SwiftWings. All rights reserved.
         </p>
