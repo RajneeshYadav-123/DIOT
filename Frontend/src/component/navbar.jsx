@@ -1,66 +1,94 @@
-;
+import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
+// Navigation Links Config
+const navLinks = [
+  { label: "Event", href: "#event" },
+  { label: "Team", href: "#team" },
+  { label: "Verify Certificate", href: "#verify" },
+  { label: "Contact Us", href: "#contact" }
+];
 
-import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+export default function GlassNavbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-export default function GlassTabsNavbar() {
-  const location = useLocation();
-  const [clickedTab, setClickedTab] = useState(null);
-
-  const tabs = [
-    { name: "Home", path: "/" },
-    { name: "Events", path: "/events" },
-    { name: "Team", path: "/team" },
-    { name: "Verify Certificate", path: "/verify" },
-    { name: "Contact Us", path: "/contact" },
-  ];
-
-  const handleClick = (name) => {
-    setClickedTab(name);
-    setTimeout(() => setClickedTab(null), 300); // glow lasts 300ms
-  };
+  useEffect(() => {
+    // Shrink and strengthen effect on scroll
+    const scrollHandler = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", scrollHandler);
+    return () => window.removeEventListener("scroll", scrollHandler);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 py-4 backdrop-blur-md">
-      <div className="flex items-center justify-between px-6">
+    <nav
+      className={`fixed top-0 left-0 w-full z-30 h-20 transition-all duration-300 border-b
+        ${
+          scrolled
+            ? "bg-gradient-to-r from-white/80 via-orange-100/70 to-orange-400/40 shadow-2xl border-white/25"
+            : "bg-gradient-to-r from-white/30 via-slate-800/30 to-orange-500/20 border-white/10"
+        }
+        backdrop-blur-xl
+      `}
+    >
+      <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <img
-            src="/drone_iot.png"
-            alt="Drone IoT Club"
-            className="w-16 h-16 object-contain drop-shadow-md"
-          />
-          <span className="text-white text-lg font-semibold tracking-wide">
-            Drone & IoT Club
-          </span>
+        <div className="flex items-center gap-2 font-bold text-lg md:text-xl text-orange-500 cursor-pointer">
+          <span className="text-2xl drop-shadow">🚁</span>
+          <span className="hidden sm:block">DroneX</span>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-4">
-          {tabs.map((tab) => {
-            const isActive = location.pathname === tab.path;
-            const isClicked = clickedTab === tab.name;
-            return (
-              <Link
-                to={tab.path}
-                key={tab.name}
-                onClick={() => handleClick(tab.name)}
-                className={`px-5 py-2 rounded-full border border-gray-300 backdrop-blur-lg transition-all duration-300
-                  ${
-                    isActive
-                      ? "bg-orange-400 text-black font-semibold shadow-[0_0_15px_rgba(253,224,71,0.7)] ring-2 ring-orange-500"
-                      : "bg-white/20 text-gray-900 hover:bg-yellow-400 hover:text-black hover:shadow-[0_0_12px_rgba(253,224,71,0.5)]"
-                  }
-                  ${isClicked ? "shadow-[0_0_20px_bg-orange-500] scale-105" : ""}
-                  hover:scale-110`}
-              >
-                {tab.name}
-              </Link>
-            );
-          })}
+        {/* Desktop nav */}
+        <div className="hidden md:flex gap-6 items-center text-base font-semibold text-white drop-shadow">
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className={`
+                px-2 py-1 rounded transition
+                hover:bg-orange-400/20 hover:text-orange-300
+                ${
+                  typeof window !== "undefined" && window.location.hash === link.href
+                    ? "text-orange-400"
+                    : ""
+                }
+              `}
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
+
+        {/* Mobile menu button */}
+        <button
+          onClick={() => setMenuOpen((p) => !p)}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
+          className="md:hidden text-white"
+        >
+          {menuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
+
+      {menuOpen && (
+        <div
+          id="mobile-menu"
+          className="md:hidden bg-gradient-to-br from-slate-900/90 to-orange-400/40 backdrop-blur-2xl border-t border-white/10 px-6 py-4 space-y-4 animate-fadeIn"
+        >
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="block text-white font-semibold rounded hover:bg-orange-400/20 hover:text-orange-300 transition py-2"
+              onClick={() => setMenuOpen(false)}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
+
