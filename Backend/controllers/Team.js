@@ -162,24 +162,42 @@ exports.getTeams = async (req, res) => {
 
 function registrationEmailTemplate(teamname, Instituename) {
     return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #f9f9f9; padding: 20px; border-radius: 10px;">
-        <h2 style="color: #4CAF50; text-align: center;">🎉 Registration Successful!</h2>
-        <p style="font-size: 16px; color: #333;">
-            Hello,
-        </p>
-        <p style="font-size: 16px; color: #333;">
-            Your team <b>${teamname}</b> from <b>${Instituename}</b> has been successfully registered for the event.
-        </p>
-        <p style="font-size: 16px; color: #333;">
-            Get ready to showcase your talent! We will share more details soon.
-        </p>
-        <hr style="border: none; border-top: 1px solid #ddd;">
-        <p style="font-size: 14px; color: #777; text-align: center;">
-            Regards,<br>
-            Rajneesh Event Team
-        </p>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
+  
+    <h2 style="color: #4CAF50; font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px;">
+        🎉 Registration Successful!
+    </h2>
+
+    <p style="font-size: 16px; color: #333333; line-height: 1.6; margin-bottom: 20px;">
+        Congratulations 🎉,
+    </p>
+
+    <p style="font-size: 16px; color: #333333; line-height: 1.6; margin-bottom: 20px;">
+        Your team <b>${teamname}</b> from <b>${Instituename}</b> has been successfully registered for the <b>SwiftWing'25</b> event!
+    </p>
+
+    <p style="font-size: 16px; color: #333333; line-height: 1.6; margin-bottom: 30px;">
+        Get ready to showcase your talent! We will share more details with you soon. Stay tuned for upcoming updates!
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin-bottom: 30px;">
+
+    <p style="font-size: 14px; color: #777777; text-align: center; line-height: 1.6;">
+        Regards,<br>
+        <span style="font-weight: bold; color: #4CAF50;">Rajneesh Event Team</span>
+    </p>
+
+    <!-- Footer section -->
+    <div style="font-size: 12px; color: #999999; text-align: center; margin-top: 20px;">
+        <p>SwiftWing'25 - The Event of the Year</p>
+        <p>If you have any questions, feel free to <a href="mailto:info@swiftwing25.com" style="color: #4CAF50;">contact us</a>.</p>
     </div>
+</div>
+
     `;
 }
+
+
 
 
