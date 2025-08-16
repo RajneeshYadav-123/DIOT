@@ -54,7 +54,7 @@ const RegistrationPage = () => {
       }
 
       const res = await axios.post(
-        "http://localhost:4000/api/v1/team/teams",
+        `${import.meta.env.VITE_PUBLIC_API}/api/v1/team/teams`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
