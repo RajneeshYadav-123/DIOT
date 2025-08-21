@@ -22,7 +22,7 @@ const Login = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_PUBLIC_API}/api/v1/auth/login`,
         formData,
-        { withCredentials: true }
+        { withCredentials:true}
       );
 
       toast.success("✅ Login successful!");

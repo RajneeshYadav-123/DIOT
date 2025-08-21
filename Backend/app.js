@@ -19,7 +19,7 @@ app.use('/assets', express.static('assets'));
 
 
 app.use(cors({
-  origin: 'http://localhost:5173', // your React app URL
+  origin: 'http://localhost:5173', 
   credentials: true,
 }));
 
@@ -52,6 +52,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
 
 
 
