@@ -1,66 +1,132 @@
-import React , { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TypeAnimation } from "react-type-animation";
 import { FaArrowRight, FaInstagram, FaLinkedin, FaEnvelope } from "react-icons/fa";
-import FlyingPlane from "../component/FlyingPlane"
+
 const LandingPage = () => {
-  const navigate = useNavigate(); 
-   const buttonRef = useRef(null);
+  const navigate = useNavigate();
+  const buttonRef = useRef(null);
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowContent(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="relative w-screen min-h-screen overflow-hidden text-white flex flex-col">
-      <div className="absolute inset-0 -z-10">
-        <img
-          src="/bg1.png"
-          alt="Background"
-          className="hidden md:block w-full object-cover object-center"
-          draggable="false"
-        />
-        <img
-          src="/bg5.png"
-          alt="Mobile Background"
-          className="block md:hidden w-full object-cover object-center"
-          draggable="false"
+    <div className="relative w-screen min-h-screen text-white">
+      {/* Fixed Background Video */}
+      <div className="fixed inset-0 -z-10">
+        <video
+          src="/bgv1.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      <div className="flex-grow flex flex-col justify-center px-4 sm:px-8 md:px-24 text-center md:text-left">
-        <TypeAnimation
-          sequence={["SwiftWings'25", 2000, "", 800]}
-          wrapper="span"
-          speed={50}
-          repeat={Infinity}
-          className="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight drop-shadow-lg mb-4"
-        />
+      {/* Hero Section */}
+      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-8 md:px-24 text-center md:text-left">
+        <div
+          className={`transform transition-all duration-1000 ease-out ${
+            showContent ? "translate-x-0 opacity-100" : "-translate-x-20 opacity-0"
+          }`}
+        >
+          <TypeAnimation
+            sequence={["SwiftWings'25", 2000, "", 800]}
+            wrapper="span"
+            speed={50}
+            repeat={Infinity}
+            className="text-4xl sm:text-5xl md:text-7xl font-extrabold drop-shadow-lg mb-4"
+          />
 
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-medium text-yellow-400 mt-3 drop-shadow-md typing">
-          Rule the Skies. Conquer the Ground.
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-medium text-yellow-400 mt-3 drop-shadow-md">
+            Rule the Skies. Conquer the Ground.
+          </h2>
+
+          <p className="mt-4 sm:mt-6 max-w-full sm:max-w-xl md:max-w-2xl text-sm sm:text-lg md:text-xl text-gray-200 leading-relaxed mx-auto md:mx-0">
+            Prepare for the ultimate RC fixed-wing drone showdown — precision
+            flying, cutting-edge engineering, and adrenaline-packed aerial battles.
+            Push the limits of innovation and claim your place among the legends.
+          </p>
+
+          <div className="mt-6 sm:mt-8 flex justify-center md:justify-start">
+            <button
+              ref={buttonRef}
+              onClick={() => navigate("/login")}
+              className="flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 
+                         bg-gradient-to-r from-yellow-500 to-orange-600 text-white 
+                         font-semibold shadow-lg transform skew-x-12 
+                         hover:from-orange-600 hover:to-yellow-500 
+                         transition-transform hover:scale-105"
+            >
+              <span className="skew-x-[-12deg] text-sm sm:text-base md:text-lg">
+                Register Now
+              </span>
+              <FaArrowRight className="skew-x-[-12deg] text-sm sm:text-base md:text-lg" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="relative z-10 bg-white/10 backdrop-blur-md py-16 px-6 sm:px-12 md:px-24">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-yellow-400 mb-12">
+          Meet Our Mentors
         </h2>
 
-        <p className="mt-4 sm:mt-6 max-w-full sm:max-w-xl md:max-w-2xl text-sm sm:text-lg md:text-xl text-gray-200 leading-relaxed mx-auto md:mx-0">
-          Prepare for the ultimate RC fixed-wing drone showdown — precision flying,
-          cutting-edge engineering, and adrenaline-packed aerial battles.
-          Push the limits of innovation and claim your place among the legends.
-        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+          {/* Patron */}
+          <div className="bg-white/10 p-6 rounded-2xl shadow-lg text-center hover:scale-105 transition-transform">
+            <img
+              src="/VC2.png"
+              alt="VC"
+              className="w-28 h-28 mx-auto rounded-full object-cover border-4 border-yellow-500"
+            />
+            <h3 className="mt-4 text-xl font-semibold">Prof. JP Saini</h3>
+            <p className="text-sm text-gray-300">Vice Chancellor, Patron</p>
+            <p className="mt-2 text-gray-200 italic">
+              "Proud to support young innovators shaping the skies of tomorrow."
+            </p>
+          </div>
 
-        <div className="mt-6 sm:mt-8 flex justify-center md:justify-start">
-          <button
-              ref={buttonRef}
-            onClick={() => navigate("/register")}
-            className="flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-semibold shadow-lg transform skew-x-12 hover:from-orange-600 hover:to-yellow-500 transition-transform hover:scale-105"
-          >
-            <span className="skew-x-[-12deg] text-sm sm:text-base md:text-lg">Register Now</span>
-            <FaArrowRight className="skew-x-[-12deg] text-sm sm:text-base md:text-lg" />
-          </button>
+          {/* Faculty Advisor */}
+          <div className="bg-white/10 p-6 rounded-2xl shadow-lg text-center hover:scale-105 transition-transform">
+            <img
+              src="/sks.jpg"
+              alt="Faculty Advisor"
+              className="w-28 h-28 mx-auto rounded-full object-cover border-4 border-yellow-500"
+            />
+            <h3 className="mt-4 text-xl font-semibold">Prof. SK Soni</h3>
+            <p className="text-sm text-gray-300">Faculty Advisor</p>
+            <p className="mt-2 text-gray-200 italic">
+              "Guiding minds to reach new heights in technology and innovation."
+            </p>
+          </div>
+
+          {/* Event Coordinator */}
+          <div className="bg-white/10 p-6 rounded-2xl shadow-lg text-center hover:scale-105 transition-transform">
+            <img
+              src="/rajan.jpg"
+              alt="Event Coordinator"
+              className="w-28 h-28 mx-auto rounded-full object-cover border-4 border-yellow-500"
+            />
+            <h3 className="mt-4 text-xl font-semibold">Prof. Rajan Mishra</h3>
+            <p className="text-sm text-gray-300">Event Coordinator</p>
+            <p className="mt-2 text-gray-200 italic">
+              "Excited to organize a platform for aerial excellence and teamwork."
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
 
-
-
-
-      <footer className="w-full bg-black/50 backdrop-blur-md py-6 mt-auto flex flex-col md:flex-row items-center justify-between px-4 sm:px-8 md:px-24 text-gray-200">
+      {/* Footer */}
+      <footer className="w-full bg-black/70 backdrop-blur-md py-6 flex flex-col md:flex-row items-center justify-between px-4 sm:px-8 md:px-24 text-gray-200">
         <div className="flex items-center gap-6 mb-4 md:mb-0 justify-center md:justify-start">
-          <a href="mailto:example@email.com" target="_blank" rel="noopener noreferrer">
+          <a href="mailto:example@email.com">
             <FaEnvelope size={20} className="hover:text-yellow-400 transition-colors" />
           </a>
           <a href="https://www.instagram.com/drone_iot_club.mmmut?igsh=dzVtM25ueXRhaWE=" target="_blank" rel="noopener noreferrer">
@@ -70,7 +136,6 @@ const LandingPage = () => {
             <FaLinkedin size={20} className="hover:text-blue-500 transition-colors" />
           </a>
         </div>
-
         <p className="text-xs sm:text-sm md:text-sm text-gray-300 text-center md:text-left">
           &copy; {new Date().getFullYear()} SwiftWings. All rights reserved.
         </p>

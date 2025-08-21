@@ -161,6 +161,44 @@ exports.getTeams = async (req, res) => {
 };
 
 
+exports.getTeamByLeaderEmail = async (req, res) => {
+    try {
+        // You can take email from logged-in user (req.user) if you are using auth middleware
+        // or directly from query/body if you pass it in request
+        const leaderEmail = req.user?.email || req.query.email || req.body.email;
+
+        if (!leaderEmail) {
+            return res.status(400).json({
+                success: false,
+                message: "Leader email is required"
+            });
+        }
+
+        // Find team where leader email matches
+        const team = await Team.findOne({ teamLeader_email: leaderEmail });
+
+        if (!team) {
+            return res.status(404).json({
+                success: false,
+                message: "No team found for this leader email"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Team fetched successfully",
+            data: team
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error fetching team by leader email",
+            error: error.message
+        });
+    }
+};
+
 
 function registrationEmailTemplate(teamname, Instituename) {
     return `
