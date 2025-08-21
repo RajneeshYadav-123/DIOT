@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
 
 const RegistrationPage = () => {
+  const [submitting, setSubmitting] = useState(false);
+
   const {
     register,
     control,
@@ -26,7 +28,43 @@ const RegistrationPage = () => {
     name: "members",
   });
 
+  // Fetch logged-in user data and prefill team leader
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_PUBLIC_API}/api/v1/auth/me`,
+          { withCredentials: true }
+        );
+
+        if (res.data.success) {
+          const user = res.data.user;
+          reset({
+            teamName: "",
+            instituteName: "",
+            members: [
+              {
+                name: user.Name || "",
+                rollNo: user.rollNo || "",
+                branch: user.branch || "",
+                year: user.year || "",
+                mobile: user.contactNumber || "",
+                email: user.email || "",
+              },
+            ],
+            transactionNo: "",
+            receiptFile: null,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch user data:", err);
+      }
+    };
+    fetchUser();
+  }, [reset]);
+
   const onSubmit = async (data) => {
+    setSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("teamname", data.teamName);
@@ -53,20 +91,18 @@ const RegistrationPage = () => {
         formData.append("imagefile", data.receiptFile[0]);
       }
 
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_PUBLIC_API}/api/v1/team/teams`,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      alert("✅ Team Registered Successfully!");
-      console.log("Server Response:", res.data);
+      // Optional: reset form after submission
       reset();
     } catch (err) {
-      console.error(err);
-      alert("❌ Error registering team. Check console.");
+      console.error("Error registering team:", err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -239,9 +275,12 @@ const RegistrationPage = () => {
 
           <button
             type="submit"
-            className="px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-semibold rounded-lg shadow-lg hover:from-orange-600 hover:to-yellow-500 transition-transform hover:scale-105"
+            disabled={submitting}
+            className={`px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-semibold rounded-lg shadow-lg transition-transform hover:scale-105 ${
+              submitting ? "opacity-50 cursor-not-allowed" : "hover:from-orange-600 hover:to-yellow-500"
+            }`}
           >
-            Submit
+            {submitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </form>

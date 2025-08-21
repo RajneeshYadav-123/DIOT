@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-
+const userRoutes = require("./routes/User")
 const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -18,11 +18,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/assets', express.static('assets'));
 
 
-
 app.use(cors({
-  origin: '*',
+  origin: 'http://localhost:5173', // your React app URL
   credentials: true,
 }));
+
 
 app.use(fileUpload({
   useTempFiles: true,
@@ -33,11 +33,11 @@ app.use(fileUpload({
 
 cloudinaryConnect();
 database.connect();
-
+const campus = require('./routes/campusAmb') ;
 const teams=require('./routes/Teams');
-
+app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/team",teams);
-
+app.use("/api/v1/campusAmbassador" , campus) ;
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -48,10 +48,10 @@ app.get('/', (req, res) => {
 
 
 
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
 
 
 
