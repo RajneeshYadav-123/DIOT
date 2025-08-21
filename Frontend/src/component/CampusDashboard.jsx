@@ -20,7 +20,7 @@ const CampusDashboard = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        "http://localhost:4000/api/v1/campusAmbassador/my-referrals",
+        `${import.meta.env.VITE_PUBLIC_API}/api/v1/campusAmbassador/my-referrals`,
         { withCredentials: true }
       );
       setReferrals(res.data.data || []);
@@ -36,7 +36,7 @@ const CampusDashboard = () => {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:4000/api/v1/campusAmbassador/create-referral",
+        `${import.meta.env.VITE_PUBLIC_API}/api/v1/campusAmbassador/create-referral`,
         { teamName, teamLeaderName },
         { withCredentials: true }
       );
