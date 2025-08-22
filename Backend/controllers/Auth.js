@@ -190,6 +190,7 @@ exports.login = async(req , res) => {
         }
 
         const user = await User.findOne({email})
+        // console.log(user);
         if(!user){
             return res.status(401).json({
                  success: false ,
@@ -239,7 +240,7 @@ exports.login = async(req , res) => {
     catch(error){
         console.log(error) ;
         return res.status(500).json({
-            success : true ,
+            success : false ,
             message : "Login Failure ...try Again !!"
         }); 
 

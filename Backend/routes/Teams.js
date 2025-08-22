@@ -4,7 +4,7 @@ const { TeamDetails, getTeams , getTeamByLeaderEmail} = require('../controllers/
 const {auth} = require('../middleware/auth')
 router.post('/teams', TeamDetails);   
 router.get('/teams', getTeams);       
-router.get('/teamdetails' ,auth ,getTeamByLeaderEmail );
+router.get('/teamdetails'  ,getTeamByLeaderEmail );
 module.exports = router;
 
 
