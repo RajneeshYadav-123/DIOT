@@ -19,6 +19,7 @@ app.use('/assets', express.static('assets'));
 
 
 app.use(cors({
+  origin : '*',
   credentials: true,
 }));
 
