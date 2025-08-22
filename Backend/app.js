@@ -18,10 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/assets', express.static('assets'));
 
 
-app.use(cors({
-  origin : '*',
+const corsOptions = {
+  origin: 'https://swiftwing.vercel.app',
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
 
 
 app.use(fileUpload({
