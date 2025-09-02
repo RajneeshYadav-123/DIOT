@@ -199,6 +199,108 @@ exports.getTeamByLeaderEmail = async (req, res) => {
     }
 };
 
+exports.updateTeam = async (req, res) => {
+  try {
+    const leaderEmail = req.params.email; // take from URL
+
+    if (!leaderEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "Leader email is required to update team"
+      });
+    }
+
+    // Extract allowed fields (team name + members only, not leader)
+    const {
+      teamname,
+
+      team_member1_name,
+      team_member1_email,
+      team_member1_mob,
+      team_member1_branch,
+      team_member1_year,
+
+      team_member2_name,
+      team_member2_email,
+      team_member2_mob,
+      team_member2_branch,
+      team_member2_year,
+
+      team_member3_name,
+      team_member3_email,
+      team_member3_mob,
+      team_member3_branch,
+      team_member3_year,
+
+      team_member4_name,
+      team_member4_email,
+      team_member4_mob,
+      team_member4_branch,
+      team_member4_year,
+    } = req.body;
+
+    const updateData = {
+      teamname,
+
+      team_member1_name,
+      team_member1_email,
+      team_member1_mob,
+      team_member1_branch,
+      team_member1_year,
+
+      team_member2_name,
+      team_member2_email,
+      team_member2_mob,
+      team_member2_branch,
+      team_member2_year,
+
+      team_member3_name,
+      team_member3_email,
+      team_member3_mob,
+      team_member3_branch,
+      team_member3_year,
+
+      team_member4_name,
+      team_member4_email,
+      team_member4_mob,
+      team_member4_branch,
+      team_member4_year,
+    };
+
+    // remove undefined values
+    Object.keys(updateData).forEach(
+      (key) => updateData[key] === undefined && delete updateData[key]
+    );
+
+    // find team by leader email
+    const team = await Team.findOneAndUpdate(
+      { teamLeader_email: leaderEmail },
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!team) {
+      return res.status(404).json({
+        success: false,
+        message: "Team not found for this leader email"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Team details updated successfully",
+      data: team,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error updating team details",
+      error: error.message,
+    });
+  }
+};
+
+
 
 function registrationEmailTemplate(teamname, Instituename) {
     return `

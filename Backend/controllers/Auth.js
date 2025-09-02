@@ -80,7 +80,6 @@ exports.signUp = async(req , res) => {
         password , 
         confirmPassword , 
         accountType , 
-        contactNumber , 
         otp,
         rollNo 
     } = req.body ;
@@ -144,7 +143,6 @@ console.log("4th")
      const user  = await User.create({
         Name , 
         email,
-        contactNumber ,
         password : hashedpassword ,
         accountType ,
         rollNo ,
@@ -346,13 +344,22 @@ exports.me = async (req, res) => {
 
 
 
-// Logout (stateless)
+// Logout
 exports.logout = async (req, res) => {
   try {
-    // Nothing to "delete" on server since JWT is stateless
-    res.status(200).json({ success: true, message: "Logged out successfully" });
+    res.clearCookie("token", {
+      httpOnly: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
   } catch (error) {
     console.error("Logout error:", error);
-    res.status(500).json({ success: false, message: "Logout failed" });
+    return res.status(500).json({
+      success: false,
+      message: "Logout failed",
+    });
   }
 };

@@ -19,6 +19,7 @@ const LeaderDashboard = () => {
 
       if (res.data.success) {
         setTeam(res.data.data);
+        console.log(res.data.data);
       } else {
         setTeam(null);
         toast.error(res.data.message || "No team found");
@@ -88,12 +89,15 @@ const LeaderDashboard = () => {
                 </li>
               ) : (
                 <li>
-                  <button
+                  {/* <button
                     className="w-full bg-yellow-400 hover:bg-yellow-500 p-2 rounded"
-                    onClick={() => navigate("/edit-team")}
+                    disabled
+                    onClick={() =>
+                      navigate(`/edit-team/${encodeURIComponent(team.teamLeader_email)}`)
+                    } // ✅ using leader email instead of teamId
                   >
                     Edit Team Details
-                  </button>
+                  </button> */}
                 </li>
               )}
             </ul>

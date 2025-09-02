@@ -2,19 +2,42 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FiPlusCircle, FiList, FiLogOut } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
-
+import { useNavigate } from "react-router-dom";
 const CampusDashboard = () => {
   const [activeTab, setActiveTab] = useState("myReferrals");
   const [referrals, setReferrals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [teamLeaderName, setTeamLeaderName] = useState("");
+  const [isAmbassador, setIsAmbassador] = useState(true); // assume true until validated
+const navigate = useNavigate();
 
   useEffect(() => {
-    if (activeTab === "myReferrals") {
+    const checkUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/api/v1/auth/me", {
+          withCredentials: true,
+        });
+
+        if (res.data?.user?.accountType !== "Campus_Ambasdor") {
+          setIsAmbassador(false);
+          toast.error("You are not a campus ambassador");
+        }
+      } catch (error) {
+        console.error("Error verifying user:", error);
+        toast.error("Unable to verify user");
+        setIsAmbassador(false);
+      }
+    };
+
+    checkUser();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === "myReferrals" && isAmbassador) {
       fetchReferrals();
     }
-  }, [activeTab]);
+  }, [activeTab, isAmbassador]);
 
   const fetchReferrals = async () => {
     try {
@@ -51,9 +74,30 @@ const CampusDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    window.location.href = "/login";
+   const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:4000/api/v1/auth/logout",
+        {},
+        { withCredentials: true }
+      );
+      toast.success("Logged out successfully");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      toast.error("Logout failed");
+    }
   };
+
+  // ✅ Block dashboard if not ambassador
+  if (!isAmbassador) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-black text-white">
+        <Toaster position="top-right" reverseOrder={false} />
+        <p className="text-lg">Access denied</p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-screen min-h-screen flex">
@@ -164,9 +208,7 @@ const CampusDashboard = () => {
                           Leader: {ref.teamLeaderName}
                         </p>
                       </div>
-                      <span className="text-sm text-gray-400">
-                        {new Date(ref.createdAt).toLocaleDateString()}
-                      </span>
+                     
                     </li>
                   ))}
                 </ul>

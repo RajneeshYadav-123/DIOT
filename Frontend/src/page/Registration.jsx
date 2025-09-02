@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const RegistrationPage = () => {
   const [submitting, setSubmitting] = useState(false);
-
+const navigate  = useNavigate() ;
   const {
     register,
     control,
@@ -99,6 +100,7 @@ const RegistrationPage = () => {
 
       // Optional: reset form after submission
       reset();
+ navigate("/dashboard");
     } catch (err) {
       console.error("Error registering team:", err);
     } finally {
@@ -121,8 +123,8 @@ const RegistrationPage = () => {
   ];
 
   const bankDetails = {
-    accountNo: "99999555951834",
-    accountName: "AMAN JAISWAL",
+    accountNo: "33542824744",
+    accountName: "M.M.M. University of Technology Gorakhpur",
     ifsc: "SBIN0002578",
   };
 
